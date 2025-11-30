@@ -3,11 +3,47 @@ const GROUPS_KEY = "splitclone:groups";
 const USER_KEY = "splitclone:user";
 const EXPENSES_KEY = "splitclone:expenses";
 const MESSAGES_KEY = "splitclone:messages";
+const FRIENDS_KEY = "splitclone:friends";
 
 function safeParse(v) {
   try { return JSON.parse(v); } catch { return null; }
 }
 
+// Friends management
+export function getLocalFriends() {
+  const raw = localStorage.getItem(FRIENDS_KEY);
+  return safeParse(raw) || [];
+}
+
+export function saveLocalFriends(friends) {
+  localStorage.setItem(FRIENDS_KEY, JSON.stringify(friends));
+}
+
+export function addLocalFriend(payload) {
+  const friends = getLocalFriends();
+  const id = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2,9)}`;
+  const now = new Date().toISOString();
+  const friend = { 
+    id, 
+    ...payload, 
+    createdAt: payload.createdAt instanceof Date ? payload.createdAt.toISOString() : payload.createdAt || now 
+  };
+  friends.push(friend);
+  saveLocalFriends(friends);
+  return friend;
+}
+
+export function deleteLocalFriend(friendId) {
+  const friends = getLocalFriends().filter(f => f.id !== friendId);
+  saveLocalFriends(friends);
+  return true;
+}
+
+export function getLocalFriendById(id) {
+  return getLocalFriends().find(f => f.id === id) || null;
+}
+
+// Groups management
 export function getLocalGroups() {
   const raw = localStorage.getItem(GROUPS_KEY);
   return safeParse(raw) || [];
@@ -48,6 +84,15 @@ export function addLocalExpense(groupId, payload) {
   expenses.push(e);
   saveLocalExpenses(expenses);
   return e;
+}
+
+export function updateLocalExpense(groupId, expenseId, updates) {
+  const expenses = getLocalExpenses();
+  const idx = expenses.findIndex(e => e.groupId === groupId && e.id === expenseId);
+  if (idx === -1) return null;
+  expenses[idx] = { ...expenses[idx], ...updates };
+  saveLocalExpenses(expenses);
+  return expenses[idx];
 }
 
 export function deleteLocalExpense(groupId, expenseId) {
@@ -116,7 +161,6 @@ export function deleteLocalGroup(groupId) {
 export function getLocalGroupById(id) {
   return getLocalGroups().find(g => g.id === id) || null;
 }
-
 
 export function saveUserLocally(user) {
   // store only minimal info

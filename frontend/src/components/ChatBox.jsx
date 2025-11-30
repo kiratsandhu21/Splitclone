@@ -26,9 +26,9 @@ export default function ChatBox({ groupId }) {
   return (
     <div className="flex-col" style={{ height: "400px" }}>
       {/* Messages Area */}
-      <div style={{ 
+      <div style={{
         flex: 1,
-        overflow: "auto", 
+        overflow: "auto",
         padding: "var(--spacing-md)",
         background: "var(--bg-tertiary)",
         borderRadius: "var(--radius-md)",
@@ -56,8 +56,8 @@ export default function ChatBox({ groupId }) {
                     border: isOwn ? "none" : "1px solid var(--border-color)"
                   }}>
                     {!isOwn && (
-                      <div style={{ 
-                        fontSize: "11px", 
+                      <div style={{
+                        fontSize: "11px",
                         color: "var(--text-muted)",
                         marginBottom: "var(--spacing-xs)",
                         fontWeight: "600"
@@ -69,8 +69,8 @@ export default function ChatBox({ groupId }) {
                       {m.text}
                     </div>
                     {m.createdAt && (
-                      <div style={{ 
-                        fontSize: "10px", 
+                      <div style={{
+                        fontSize: "10px",
                         opacity: 0.7,
                         marginTop: "var(--spacing-xs)",
                         textAlign: "right"
@@ -88,14 +88,14 @@ export default function ChatBox({ groupId }) {
 
       {/* Input Area */}
       <div className="flex gap-sm">
-        <input 
-          value={text} 
-          onChange={e => setText(e.target.value)} 
-          placeholder="Type a message..." 
+        <input
+          value={text}
+          onChange={e => setText(e.target.value)}
+          placeholder="Type a message..."
           onKeyPress={(e) => e.key === 'Enter' && send()}
           style={{ flex: 1 }}
         />
-        <button 
+        <button
           onClick={send}
           className="btn-primary"
           disabled={!text.trim()}
